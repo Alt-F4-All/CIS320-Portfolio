@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Portfolio CSV Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>💹 Investment Portfolio</h1>
+  <form id="uploadForm">
+    <input type="file" id="fileInput" accept=".csv" required>
+    <button type="submit">Upload CSV</button>
+  </form>
+
+  <table id="results">
+    <thead>
+      <tr><th>Symbol</th><th>Qty</th><th>Buy</th><th>Current</th><th>Profit/Loss</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div id="summary"></div>
+
+  <script src="main.js"></script>
+</body>
+</html>
