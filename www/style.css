@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
 body {
   display: flex;
   background-color: #0b1529;
@@ -18,6 +17,7 @@ body {
   flex-direction: column;
   align-items: center;
   padding: 20px 0;
+  gap: 10px;
 }
 
 .logo {
@@ -30,27 +30,27 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
 }
 
-.sidebar nav a {
+.sidebar nav a, #themeToggle {
   display: block;
-  padding: 15px;
+  padding: 12px;
   color: #8893b4;
   text-decoration: none;
   font-size: 20px;
-  margin-bottom: 10px;
   border-radius: 10px;
   transition: background 0.2s;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
-.sidebar nav a:hover,
-.sidebar nav a.active {
+.sidebar nav a:hover, .sidebar nav a.active {
   background-color: #1a2646;
   color: white;
 }
 
-/* Main content */
 .main {
   flex: 1;
   padding: 30px;
@@ -73,7 +73,6 @@ header input {
   color: #cfd8e3;
 }
 
-/* Top section */
 .top-section {
   display: flex;
   gap: 20px;
@@ -88,25 +87,40 @@ header input {
   text-align: center;
 }
 
-.chart-card h2, .portfolio-card h2 {
-  margin-bottom: 15px;
-  font-size: 18px;
+/* Form styles */
+.projection-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
 }
 
-/* Portfolio Card */
-#categoryBreakdown {
-  margin-top: 10px;
-  text-align: left;
-  list-style: none;
-  padding: 0;
+.projection-form label {
+  display: flex;
+  flex-direction: column;
   font-size: 14px;
+  color: #cfd8e3;
 }
 
-#categoryBreakdown li {
-  margin-bottom: 6px;
+.projection-form input {
+  padding: 6px 10px;
+  background: #16213e;
+  border: none;
+  border-radius: 6px;
+  color: #cfd8e3;
+  width: 150px;
 }
 
-/* Stock Section */
+.projection-form button {
+  padding: 8px 12px;
+  background: #00b4d8;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
 .stock-section {
   display: flex;
   gap: 20px;
@@ -120,78 +134,21 @@ header input {
   flex: 1;
 }
 
-.stock-inputs form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+.stock-list ul { list-style: none; margin-top: 10px; }
+.stock-list li { padding: 6px 0; border-bottom: 1px solid #1c2b55; cursor: pointer; }
+.stock-list li:hover { color: #00b4d8; }
 
-.stock-inputs input, .stock-inputs select {
-  padding: 8px 10px;
-  background: #16213e;
-  border: none;
-  border-radius: 6px;
-  color: #cfd8e3;
-}
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-.stock-inputs button {
-  padding: 8px;
-  background: #00b4d8;
-  border: none;
-  color: white;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: opacity 0.2s;
+/* Light Theme */
+body.light-theme {
+  background-color: #f5f6fa;
+  color: #1b1f29;
 }
-
-.stock-inputs button:hover { opacity: 0.8; }
-
-.stock-list ul {
-  list-style: none;
-  margin-top: 10px;
-}
-
-.stock-list li {
-  padding: 6px 0;
-  border-bottom: 1px solid #1c2b55;
-  cursor: pointer;
-}
-
-.stock-list li:hover {
-  color: #00b4d8;
-}
-.tabs {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.tab-btn {
-  background: #16213e;
-  color: #cfd8e3;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 16px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background 0.2s;
-}
-
-.tab-btn.active {
-  background: #00b4d8;
-  color: white;
-}
-
-.tab-content {
-  display: none;
-}
-
-.tab-content.active {
-  display: block;
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+body.light-theme .sidebar { background-color: #dfe6f0; }
+body.light-theme .chart-card, body.light-theme .portfolio-card, body.light-theme .stock-inputs, body.light-theme .stock-list {
+  background-color: #fff;
+  color: #1b1f29;
 }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portfolio Tracker</title>
+  <title>Holistic Portfolio</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -11,11 +11,9 @@
   <div class="sidebar">
     <div class="logo">H</div>
     <nav>
-      <a href="#" class="active">🏠</a>
-      <a href="#">💰</a>
-      <a href="#">❤️</a>
-      <a href="#">📈</a>
-      <a href="#">⚙️</a>
+      <a href="#" class="tab-btn active" data-tab="portfolio">💰</a>
+      <a href="#" class="tab-btn" data-tab="projection">📈</a>
+      <button id="themeToggle">☀️</button>
     </nav>
   </div>
 
@@ -25,33 +23,26 @@
       <input type="text" placeholder="🔍 Search..." />
     </header>
 
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="assetClass">Asset Classes</button>
-      <button class="tab-btn" data-tab="sectors">Sectors</button>
-      <button class="tab-btn" data-tab="countries">Countries</button>
-      <button class="tab-btn" data-tab="currencies">Currencies</button>
-    </div>
-
-    <!-- Asset Classes -->
-    <div class="tab-content active" id="assetClass">
+    <!-- Portfolio Tracker Tab -->
+    <div class="tab-content active" id="portfolio">
       <section class="top-section">
         <div class="chart-card">
-          <h2>Asset Allocation</h2>
-          <canvas id="assetChart"></canvas>
+          <h2>Portfolio Allocation</h2>
+          <canvas id="portfolioChart"></canvas>
         </div>
         <div class="portfolio-card">
-          <h2>Portfolio Overview</h2>
-          <p>Total: <strong id="assetTotal">0 €</strong></p>
-          <ul id="assetBreakdown"></ul>
+          <h2>Overview</h2>
+          <p>Total: <strong id="portfolioTotal">0 €</strong></p>
+          <ul id="portfolioBreakdown"></ul>
         </div>
       </section>
 
       <section class="stock-section">
         <div class="stock-inputs">
           <h2>Add Asset</h2>
-          <form id="assetForm">
+          <form id="portfolioForm">
             <label>Category:
-              <select id="assetCategory">
+              <select id="portfolioCategory">
                 <option value="Real Estate">Real Estate</option>
                 <option value="Cash">Cash</option>
                 <option value="Stocks">Stocks</option>
@@ -59,132 +50,30 @@
                 <option value="Other">Other</option>
               </select>
             </label>
-            <label>Name: <input type="text" id="assetName" required /></label>
-            <label>Value (€): <input type="number" id="assetValue" required /></label>
+            <label>Name: <input type="text" id="portfolioName" required /></label>
+            <label>Value (€): <input type="number" id="portfolioValue" required /></label>
             <button type="submit">Add</button>
           </form>
         </div>
         <div class="stock-list">
           <h2>My Assets</h2>
-          <ul id="assetList"></ul>
+          <ul id="portfolioList"></ul>
         </div>
       </section>
     </div>
 
-    <!-- Sectors -->
-    <div class="tab-content" id="sectors">
-      <section class="top-section">
-        <div class="chart-card">
-          <h2>Sector Allocation</h2>
-          <canvas id="sectorChart"></canvas>
-        </div>
-        <div class="portfolio-card">
-          <h2>Sector Overview</h2>
-          <p>Total: <strong id="sectorTotal">0 €</strong></p>
-          <ul id="sectorBreakdown"></ul>
-        </div>
-      </section>
-
-      <section class="stock-section">
-        <div class="stock-inputs">
-          <h2>Add Sector Asset</h2>
-          <form id="sectorForm">
-            <label>Sector:
-              <select id="sectorCategory">
-                <option value="Technology">Technology</option>
-                <option value="Energy">Energy</option>
-                <option value="Finance">Finance</option>
-                <option value="Healthcare">Healthcare</option>
-                <option value="Other">Other</option>
-              </select>
-            </label>
-            <label>Name: <input type="text" id="sectorName" required /></label>
-            <label>Value (€): <input type="number" id="sectorValue" required /></label>
-            <button type="submit">Add</button>
-          </form>
-        </div>
-        <div class="stock-list">
-          <h2>My Sectors</h2>
-          <ul id="sectorList"></ul>
-        </div>
-      </section>
-    </div>
-
-    <!-- Countries -->
-    <div class="tab-content" id="countries">
-      <section class="top-section">
-        <div class="chart-card">
-          <h2>Country Distribution</h2>
-          <canvas id="countryChart"></canvas>
-        </div>
-        <div class="portfolio-card">
-          <h2>Country Overview</h2>
-          <p>Total: <strong id="countryTotal">0 €</strong></p>
-          <ul id="countryBreakdown"></ul>
-        </div>
-      </section>
-
-      <section class="stock-section">
-        <div class="stock-inputs">
-          <h2>Add Country Asset</h2>
-          <form id="countryForm">
-            <label>Country:
-              <select id="countryCategory">
-                <option value="USA">USA</option>
-                <option value="Europe">Europe</option>
-                <option value="Asia">Asia</option>
-                <option value="South America">South America</option>
-                <option value="Other">Other</option>
-              </select>
-            </label>
-            <label>Name: <input type="text" id="countryName" required /></label>
-            <label>Value (€): <input type="number" id="countryValue" required /></label>
-            <button type="submit">Add</button>
-          </form>
-        </div>
-        <div class="stock-list">
-          <h2>My Countries</h2>
-          <ul id="countryList"></ul>
-        </div>
-      </section>
-    </div>
-
-    <!-- Currencies -->
-    <div class="tab-content" id="currencies">
-      <section class="top-section">
-        <div class="chart-card">
-          <h2>Currency Exposure</h2>
-          <canvas id="currencyChart"></canvas>
-        </div>
-        <div class="portfolio-card">
-          <h2>Currency Overview</h2>
-          <p>Total: <strong id="currencyTotal">0 €</strong></p>
-          <ul id="currencyBreakdown"></ul>
-        </div>
-      </section>
-
-      <section class="stock-section">
-        <div class="stock-inputs">
-          <h2>Add Currency Asset</h2>
-          <form id="currencyForm">
-            <label>Currency:
-              <select id="currencyCategory">
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-                <option value="GBP">GBP</option>
-                <option value="BTC">BTC</option>
-                <option value="Other">Other</option>
-              </select>
-            </label>
-            <label>Name: <input type="text" id="currencyName" required /></label>
-            <label>Value (€): <input type="number" id="currencyValue" required /></label>
-            <button type="submit">Add</button>
-          </form>
-        </div>
-        <div class="stock-list">
-          <h2>My Currencies</h2>
-          <ul id="currencyList"></ul>
-        </div>
+    <!-- Projection Calculator Tab -->
+    <div class="tab-content" id="projection">
+      <section class="chart-card">
+        <h2>Projection Calculator</h2>
+        <form id="projectionForm" class="projection-form">
+          <label>Initial Investment (€): <input type="number" id="projInitial" required /></label>
+          <label>Monthly Contribution (€): <input type="number" id="projMonthly" required /></label>
+          <label>Expected Annual Return (%): <input type="number" id="projReturn" required /></label>
+          <label>Years: <input type="number" id="projYears" required /></label>
+          <button type="submit">Calculate</button>
+        </form>
+        <canvas id="projectionChart"></canvas>
       </section>
     </div>
   </div>

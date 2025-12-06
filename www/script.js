@@ -1,149 +1,130 @@
-const colorPalettes = ["#00b4d8", "#48cae4", "#0077b6", "#90e0ef", "#023e8a"];
+let datasets = [];
+let portfolioChart = null;
+let projectionChart = null;
 
-// 🧠 Chart + data storage
-const charts = {};
-const datasets = {
-  assetClass: [],
-  sectors: [],
-  countries: [],
-  currencies: []
-};
-
-// ========== 💾 Load & Save Helpers ==========
 function saveData() {
-  localStorage.setItem("holisticDashboardData", JSON.stringify(datasets));
+  localStorage.setItem("portfolioData", JSON.stringify(datasets));
 }
-
 function loadData() {
-  const saved = localStorage.getItem("holisticDashboardData");
-  if (saved) {
-    const parsed = JSON.parse(saved);
-    for (const key in parsed) {
-      if (datasets[key]) datasets[key] = parsed[key];
-    }
-  }
+  const saved = localStorage.getItem("portfolioData");
+  if (saved) datasets = JSON.parse(saved);
 }
 
-// ========== 📊 Chart Updating ==========
-function updateChart(tab) {
-  const ctxId = `${tab.replace("Class", "")}Chart`;
-  const ctx = document.getElementById(ctxId);
-  if (!ctx) return;
-
-  const data = datasets[tab];
+// ====== Portfolio Chart ======
+function updatePortfolio() {
+  const ctx = document.getElementById("portfolioChart");
   const categories = {};
-
-  // Sum by category
-  data.forEach(d => {
-    categories[d.category] = (categories[d.category] || 0) + d.value;
-  });
-
+  datasets.forEach(d => categories[d.category] = (categories[d.category] || 0) + d.value);
   const labels = Object.keys(categories);
   const values = Object.values(categories);
-  const colors = colorPalettes.slice(0, labels.length);
 
-  // Destroy old chart
-  if (charts[tab]) charts[tab].destroy();
-
-  // Create new chart
-  charts[tab] = new Chart(ctx, {
+  if (portfolioChart) portfolioChart.destroy();
+  portfolioChart = new Chart(ctx, {
     type: "doughnut",
-    data: {
-      labels,
-      datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }]
-    },
-    options: {
-      plugins: {
-        legend: { labels: { color: "#cfd8e3" } }
-      },
-      cutout: "70%"
-    }
+    data: { labels, datasets: [{ data: values, backgroundColor: ["#00b4d8","#48cae4","#0077b6","#90e0ef","#023e8a"] }] },
+    options: { plugins: { legend: { labels: { color: "#cfd8e3" } } }, cutout: "70%" }
   });
 
-  updateStats(tab, categories);
-}
-
-// ========== 📈 Update Totals + Breakdown ==========
-function updateStats(tab, categories) {
-  const total = Object.values(categories).reduce((a, b) => a + b, 0);
-  const idBase = tab.replace("Class", "");
-
-  const totalElem = document.getElementById(`${idBase}Total`);
-  if (totalElem) totalElem.textContent = `${total.toLocaleString()} €`;
-
-  const breakdown = document.getElementById(`${idBase}Breakdown`);
-  if (!breakdown) return;
-
+  const total = values.reduce((a,b)=>a+b,0);
+  document.getElementById("portfolioTotal").textContent = `${total.toLocaleString()} €`;
+  const breakdown = document.getElementById("portfolioBreakdown");
   breakdown.innerHTML = "";
-  for (const [cat, val] of Object.entries(categories)) {
+  for (const [cat,val] of Object.entries(categories)) {
+    const pct = ((val/total)*100).toFixed(2);
     const li = document.createElement("li");
-    const pct = ((val / total) * 100).toFixed(2);
     li.textContent = `${cat}: ${pct}% (${val.toLocaleString()} €)`;
     breakdown.appendChild(li);
   }
 }
 
-// ========== 📝 Add Form Functionality ==========
-function setupForm(tab) {
-  const idBase = tab.replace("Class", "");
-  const form = document.getElementById(`${idBase}Form`);
-  const list = document.getElementById(`${idBase}List`);
-  if (!form || !list) return;
+document.getElementById("portfolioForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const category = document.getElementById("portfolioCategory").value;
+  const name = document.getElementById("portfolioName").value.trim();
+  const value = parseFloat(document.getElementById("portfolioValue").value);
+  if (!name || isNaN(value) || value <= 0) return;
+  datasets.push({ category, name, value });
+  saveData();
+  renderPortfolioList();
+  updatePortfolio();
+  e.target.reset();
+});
 
-  form.addEventListener("submit", e => {
-    e.preventDefault();
-    const cat = form.querySelector("select").value;
-    const name = form.querySelector('input[type="text"]').value.trim();
-    const val = parseFloat(form.querySelector('input[type="number"]').value);
-
-    if (!name || isNaN(val) || val <= 0) return;
-
-    datasets[tab].push({ category: cat, name, value: val });
-    saveData();
-    renderList(tab, list);
-    updateChart(tab);
-    form.reset();
-  });
-}
-
-// ========== 📋 Render Lists ==========
-function renderList(tab, list) {
+function renderPortfolioList() {
+  const list = document.getElementById("portfolioList");
   list.innerHTML = "";
-  datasets[tab].forEach((item, i) => {
+  datasets.forEach((item, i) => {
     const li = document.createElement("li");
     li.textContent = `${item.category}: ${item.name} — ${item.value.toLocaleString()} €`;
-
-    // Click to delete
     li.addEventListener("click", () => {
-      datasets[tab].splice(i, 1);
+      datasets.splice(i, 1);
       saveData();
-      renderList(tab, list);
-      updateChart(tab);
+      renderPortfolioList();
+      updatePortfolio();
     });
-
     list.appendChild(li);
   });
 }
 
-// ========== 🗂️ Tab Switching ==========
+// ====== Projection Calculator ======
+document.getElementById("projectionForm").addEventListener("submit", e => {
+  e.preventDefault();
+
+  const initial = parseFloat(document.getElementById("projInitial").value);
+  const monthly = parseFloat(document.getElementById("projMonthly").value);
+  const annualReturn = parseFloat(document.getElementById("projReturn").value);
+  const years = parseInt(document.getElementById("projYears").value);
+
+  if (isNaN(initial) || isNaN(monthly) || isNaN(annualReturn) || isNaN(years)) return;
+
+  const r = annualReturn / 100 / 12;
+  const n = years * 12;
+  let balance = initial;
+  const data = [];
+  const labels = [];
+
+  for (let i = 1; i <= n; i++) {
+    balance = balance * (1 + r) + monthly;
+    if (i % 12 === 0) {
+      data.push(balance);
+      labels.push(`Year ${i / 12}`);
+    }
+  }
+
+  if (projectionChart) projectionChart.destroy();
+  projectionChart = new Chart(document.getElementById("projectionChart"), {
+    type: "line",
+    data: { 
+      labels, 
+      datasets: [{
+        label: "Projected Growth (€)",
+        data,
+        borderColor: "#00b4d8",
+        backgroundColor: "#00b4d833",
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: { plugins: { legend: { labels: { color: "#cfd8e3" } } } }
+  });
+});
+
+// ====== Tabs + Theme ======
 document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
-
     const tab = btn.dataset.tab;
-    document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
     document.getElementById(tab).classList.add("active");
-    updateChart(tab);
   });
 });
 
-// ========== 🚀 Initialize ==========
-loadData();
-
-["assetClass", "sectors", "countries", "currencies"].forEach(tab => {
-  setupForm(tab);
-  const list = document.getElementById(`${tab.replace("Class", "")}List`);
-  renderList(tab, list);
-  updateChart(tab);
+document.getElementById("themeToggle").addEventListener("click", () => {
+  document.body.classList.toggle("light-theme");
 });
+
+// ====== Init ======
+loadData();
+renderPortfolioList();
+updatePortfolio();
